@@ -1,18 +1,21 @@
 --Settings--
 local ESP = {
-    Enabled = false,
-    Boxes = false,
+    Enabled = true,
+    Boxes = true,
     BoxShift = CFrame.new(0,-1.5,0),
 	BoxSize = Vector3.new(4,6,0),
     Color = Color3.fromRGB(255, 170, 0),
-    FaceCamera = false,
-    Names = false,
-    TeamColor = false,
-    Thickness = 2,
+    FaceCamera = true,
+    Names = true,
+    Distance = false,
+    TeamColor = true,
+    Thickness = 0.5,
     AttachShift = 1,
-    TeamMates = false,
+    font = 1,
+    --lockmouse = false,
+    TeamMates = true,
+    Tracers = true,
     Players = true,
-    
     Objects = setmetatable({}, {__mode="kv"}),
     Overrides = {}
 }
@@ -22,6 +25,8 @@ local cam = workspace.CurrentCamera
 local plrs = game:GetService("Players")
 local plr = plrs.LocalPlayer
 local mouse = plr:GetMouse()
+local gs = game:GetService("GuiService"):GetGuiInset();
+
 
 local V3new = Vector3.new
 local WorldToViewportPoint = cam.WorldToViewportPoint
@@ -227,28 +232,38 @@ function boxBase:Update()
             self.Components.Name.Position = Vector2.new(TagPos.X, TagPos.Y)
             self.Components.Name.Text = self.Name
             self.Components.Name.Color = color
-            
+        else
+            self.Components.Name.Visible = false
+        end
+    else
+        self.Components.Name.Visible = false
+    end
+    
+
+    if ESP.Distance then
+        local TagPos, Vis6 = WorldToViewportPoint(cam, locs.TagPos.p)
+        
+        if Vis6 then
             self.Components.Distance.Visible = true
             self.Components.Distance.Position = Vector2.new(TagPos.X, TagPos.Y + 14)
             self.Components.Distance.Text = math.floor((cam.CFrame.p - cf.p).magnitude) .."m away"
             self.Components.Distance.Color = color
         else
-            self.Components.Name.Visible = false
             self.Components.Distance.Visible = false
         end
     else
-        self.Components.Name.Visible = false
         self.Components.Distance.Visible = false
     end
-    
+
     if ESP.Tracers then
         local TorsoPos, Vis6 = WorldToViewportPoint(cam, locs.Torso.p)
 
         if Vis6 then
-            self.Components.Tracer.Visible = true
-            self.Components.Tracer.From = Vector2.new(TorsoPos.X, TorsoPos.Y)
-            self.Components.Tracer.To = Vector2.new(cam.ViewportSize.X/2,cam.ViewportSize.Y/ESP.AttachShift)
-            self.Components.Tracer.Color = color
+                self.Components.Tracer.Visible = true
+                self.Components.Tracer.From = Vector2.new(TorsoPos.X, TorsoPos.Y)
+                --self.Components.Tracer.To = Vector2.new(mouse.X, mouse.Y+gs.Y)
+                self.Components.Tracer.Color = color
+                self.Components.Tracer.To = Vector2.new(cam.ViewportSize.X/2,cam.ViewportSize.Y/ESP.AttachShift)
         else
             self.Components.Tracer.Visible = false
         end
@@ -293,14 +308,16 @@ function ESP:Add(obj, options)
 		Color = box.Color,
 		Center = true,
 		Outline = true,
-        Size = 19,
+        Font = ESP.font,
+        Size = 15,
         Visible = self.Enabled and self.Names
 	})
 	box.Components["Distance"] = Draw("Text", {
 		Color = box.Color,
 		Center = true,
 		Outline = true,
-        Size = 19,
+        Font = ESP.font,
+        Size = 15,
         Visible = self.Enabled and self.Names
 	})
 	
