@@ -233,6 +233,8 @@ function library:CreateWindow(name, size, hidebutton)
     window.Main.DisplayOrder = 15
     if syn then
         syn.protect_gui(window.Main)
+      else
+        print("nothing")
     end
 
     if getgenv().uilib then
